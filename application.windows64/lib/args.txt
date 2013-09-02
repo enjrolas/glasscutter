@@ -1,0 +1,3 @@
+ -Xms64m -Xmx1000m
+glassCutter_1_5
+glassCutter_1_5.jar,core.jar,jogl-all.jar,gluegen-rt.jar,jogl-all-natives-windows-amd64.jar,gluegen-rt-natives-windows-amd64.jar,itext.jar,pdf.jar,controlP5.jar
