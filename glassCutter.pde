@@ -41,6 +41,20 @@ void draw()
         Line segment=((Line)((Slice)slicer.slices.get(slice)).segments.get(i));
         segment.drawSegment(0);
       }        
+      for (int i=0;i<((Slice)slicer.slices.get(slice)).surfaces.size();i++)
+      {
+        Triangle triangle=((Triangle)((Slice)slicer.slices.get(slice)).surfaces.get(i));        
+        triangle=slicer.getTriangle(triangle, slicer.axis);
+        beginShape();
+        for(int j=0;j<3;j++)
+        {
+          Vertex v=triangle.slicedVertices[j];
+          stroke(v.vertexColor);
+          fill(v.vertexColor);
+          vertex(slicer.displayScalingFactor*v.point.x,slicer.displayScalingFactor*v.point.y);
+        }
+        endShape();
+      }        
       slice++;
     }
     String sliceString="slice "+thickSlice+" / "+slicer.slices.size()/slicer.microslices;
@@ -104,7 +118,6 @@ void keyPressed()
   {
     if ((keyCode==UP)||(keyCode==RIGHT))
       thickSlice++;
-    ;  
     if ((keyCode==DOWN)||(keyCode==LEFT))
       thickSlice--;
     if (thickSlice<0)
@@ -131,7 +144,8 @@ void setupGui()
           .setFocus(true)
             .setColor(color(255, 0, 0))
               .setLabelVisible(false)
-//                .setValue("/Users/apple/Dropbox/Manila\ Mantis/3D\ scans/minecraft/MinecraftPickaxe.ply")
+ //.setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/minecraft/002_lake_house.ply")
+                //.setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/minecraft/MinecraftPickaxe.ply")
                 .setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/mikan-sample/mikan rotated.ply")
                 //                .setValue("/Users/alex/Documents/LookingGlass/slices/jane with bird - aug 3 2013.ply")
                 //.setValue("/Users/alex/Documents/LookingGlass/slices/shawn thinking - aug 3 2013.ply")
@@ -669,9 +683,14 @@ class Slicer {
       output.background(255, 1.0);
       output.strokeWeight(1.0);
       if (verbose)
+      {
         println("drawing slice " + thickSlice +" / "+ slices.size()/microslices);
+        println("\t"+((Slice)slices.get(slice)).segments.size()+" line segments");
+        println("\t"+((Slice)slices.get(slice)).surfaces.size()+" surfaces");
+      }
       for (slice=thickSlice*microslices;(slice<((thickSlice+1)*microslices)+(int)(overlap*microslices))&&(slice<slicer.slices.size());slice++)
       {
+        
         for (int i=0;i<((Slice)slices.get(slice)).segments.size();i++)
         {
           Line segment=((Line)((Slice)slices.get(slice)).segments.get(i));
@@ -682,6 +701,23 @@ class Slicer {
           output.vertex(segment.end.point.x*scalingFactor/displayScalingFactor, segment.end.point.y*scalingFactor/displayScalingFactor);          
           output.endShape();
         }
+        
+        //draw the triangles
+        for (int i=0;i<((Slice)slices.get(slice)).surfaces.size();i++)
+        {
+          Triangle triangle=((Triangle)((Slice)slices.get(slice)).surfaces.get(i));
+          triangle=getTriangle(triangle, axis);
+          output.beginShape();
+          for(int j=0;j<3;j++)
+          {
+          Vertex v=triangle.slicedVertices[j];
+          output.stroke(v.vertexColor);
+          output.fill(v.vertexColor);
+          output.vertex(scalingFactor*v.point.x,scalingFactor*v.point.y);
+          }
+          output.endShape();
+        }
+
       }
       output.endDraw();
       if (((Slice)slices.get(0)).segments.size()>0)
@@ -931,25 +967,16 @@ class Slicer {
           ((Slice)slices.get(slices.size()-1)).segments.add(a);
           intersections++;
         }
+        //if the triangle is parallel to the slicing plane and within the slice width, add it to the surfaces that we'll draw for this slice
         else if (isParallel((Triangle)triangles.get(i), axis, plane, thickness))
         {
-          Line a=getSegment((Triangle)triangles.get(i), axis, plane);
-          ((Slice)slices.get(slices.size()-1)).segments.add(a);
-
-          Vertex[] triangleVertices=new Vertex[3];
-          for (int j=0;j<3;j++)
-          {
-            triangleVertices[j]=(Vertex)vertices.get(triangle.vertices[j]);
-          }
-          //add the three sides of the triangle to the list of segments
-          ((Slice)slices.get(slices.size()-1)).segments.add(new Line(triangleVertices[0], triangleVertices[1], axis, displayScalingFactor));
-          ((Slice)slices.get(slices.size()-1)).segments.add(new Line(triangleVertices[1], triangleVertices[2], axis, displayScalingFactor));
-          ((Slice)slices.get(slices.size()-1)).segments.add(new Line(triangleVertices[2], triangleVertices[0], axis, displayScalingFactor));
+          ((Slice)slices.get(slices.size()-1)).surfaces.add((Triangle)triangles.get(i));
           intersections+=3;
         }
+      }
         if (verbose)
           println("sliced plane "+plane+" / " + getAxis(bound, axis)+".  "+intersections+" intersections");
-      }
+      
     }
       status="sliced";
     
@@ -972,6 +999,28 @@ class Slicer {
       for (int i=0;i<3;i++)
         triangleVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
       return ( (triangleVertices[0].getAxis(axis) > plane-thickness) && (triangleVertices[1].getAxis(axis) > plane-thickness) && (triangleVertices[2].getAxis(axis) > plane-thickness) && (triangleVertices[0].getAxis(axis) < plane) && (triangleVertices[1].getAxis(axis) < plane) && (triangleVertices[2].getAxis(axis) < plane));
+    }
+
+    Triangle getTriangle(Triangle triangle, char axis)
+    {
+      for(int i=0;i<3;i++)
+        triangle.slicedVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
+      switch(axis){
+        case('x'):
+          for(int i=0;i<3;i++)
+          {
+            triangle.slicedVertices[i].point.x=triangle.slicedVertices[i].point.y;
+            triangle.slicedVertices[i].point.y=triangle.slicedVertices[i].point.z;
+          }
+        break;
+        case('y'):
+          for(int i=0;i<3;i++)
+            triangle.slicedVertices[i].point.y=triangle.slicedVertices[i].point.z;
+        break;
+        case('z'):
+        break;
+      }
+      return triangle;      
     }
 
     Line getSegment(Triangle triangle, char axis, float plane)
@@ -1123,9 +1172,11 @@ class Slicer {
 
   class Slice {
     ArrayList segments;
+    ArrayList surfaces;
     Slice()
     {
       segments=new ArrayList<Line>();
+      surfaces=new ArrayList<Triangle>();
     }
   }
 
@@ -1188,9 +1239,11 @@ class Slicer {
 
   class Triangle {
     int[] vertices;
+    Vertex[] slicedVertices;
     public Triangle(int _a, int _b, int _c)
     {
       vertices=new int[3];
+      slicedVertices=new Vertex[3];
       vertices[0]=_a;
       vertices[1]=_b;
       vertices[2]=_c;
