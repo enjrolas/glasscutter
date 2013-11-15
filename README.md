@@ -1,6 +1,56 @@
 Glasscutter is a program that slices color 3D objects into a set of
 flat slices.
 
+**Brief Rundown Of The Program**
+[Here's the Glasscutter UI](http://imgur.com/3wQSfQg)
+There are three main sections of the UI:
+
+**The box dimensions**
+
+When all the slices are stacked up, they will form a box of this
+dimension.
+
+**Slicing axis/slice thickness**
+
+The slices will be normal to the slicing axis.  The slices have a
+certain thickness -- this is the thickness of the material that the
+slices will be printed on.
+
+There is a number of microslices that make up each slice.  These
+microslices will all be printed together onto their slice.  Think of
+them like contour lines on a topological map.  The closer the contour
+lines get, the more detail they can represent on the map.
+
+The next version of Glasscutter, currently in beta, replaces
+microslices by drawing a polygon onto the slice if the triangle is
+flat enough that it lies within the thickness of a slice.
+
+**Output Options**
+
+Glasscutter currently supports two export formats:  png and pdf.  
+
+The options at the top are all for the pdf export -- output page
+dimensions, columns, rows and margin.  The pdf will contain a
+set of dimensionally accurate pages that can be directly printed and cut.
+An example pdf export is [here](http://imgur.com/Lzw1tOf), sliced from
+a colored version of [this thingiverse thing](http://www.thingiverse.com/thing:32477)
+
+Page dimensions set the size of the page, rows and margins set the
+number of slices that go on a page, spacing is the distance between
+the slices and margin is the margin between the slices and the edge of
+the page.
+
+The bottom options are for the png export.  The resolution sets, well,
+the resolution of the png in dpi.  'Overlap' prints microslices from
+the neighboring slices onto the current slice.  The number is from
+0-1, where a 0 indicates no overlap, a 0.5 indicates a 50% overlap and
+a 1 indicates a 100% overlap.
+
+Finally, in the center, there are two checkboxes to set pdf and png
+exports.  If no boxes are checked, the program will just slice the
+model and show a preview, but not export anything.  If either box is
+checked, the program will export that format.
+
 **Language**
 
 Glasscutter is written in Processing, which is based on Java.  The
