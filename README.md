@@ -28,7 +28,9 @@ vertex-colored PLY files.  Fortunately, the open-source software
 Meshlab(http://meshlab.sourceforge.net/) can convert just about any 3D
 file format into ascii-formatted, vertex-colored PLYs.  Here's how:
 
-First, the vertex coloring.  There are two ways to color 3D files:
+**Vertex Coloring**
+
+There are two ways to color 3D files:
 vertex coloring and texture-mapping.  In texture mapping, there is an
 image file that contains the flattened "skin" of the 3D object.  Each
 vertex in the mesh contains a co-ordinate from the texture that
@@ -54,7 +56,8 @@ vertex-colored.  You'll still have to export the PLY file, though.
 Read below to see how.
 
 
-Exporting PLYs:
+**Exporting PLYs**
+
 Exporting PLYs is simple, but there are a few things that you have to
 get right.  To export a file as a PLY, first open the file in
 Meshlab.  Then, go to File->Export Mesh As... and select "Stanford
