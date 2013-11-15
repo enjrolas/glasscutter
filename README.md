@@ -10,8 +10,7 @@ http://www.processing.org
 **Dependencies:**
 
 Glasscutter requires the ControlP5 library for graphical user
-interfaces, available for download from
-http://www.sojamo.de/libraries/controlP5/
+interfaces, available for download [here.](http://www.sojamo.de/libraries/controlP5/)
 To install, download the library from the above website and unzip it.
 There's a folder that contains your Processing sketches -- for mac
 users, the default location is in ~/Documents/Processing, and for
@@ -20,12 +19,15 @@ there's another folder called 'libraries'.  Drag the unzipped
 directory that you downloaded into the libraries folder and restart
 processing.  You're good to go!
 
-
+**License**
+This work is licensed under a Creative Commons Attribution-ShareAlike
+3.0 Unported License.
+The summary and full text of the license are viewable [here](http://creativecommons.org/licenses/by-sa/3.0/deed.en_US)
 
 
 This version of Glasscutter can only slice ascii-formatted,
 vertex-colored PLY files.  Fortunately, the open-source software
-Meshlab(http://meshlab.sourceforge.net/) can convert just about any 3D
+[Meshlab](http://meshlab.sourceforge.net/) can convert just about any 3D
 file format into ascii-formatted, vertex-colored PLYs.  Here's how:
 
 **Vertex Coloring**
@@ -63,7 +65,7 @@ get right.  To export a file as a PLY, first open the file in
 Meshlab.  Then, go to File->Export Mesh As... and select "Stanford
 Polygon File Format (*.ply)" in the "files of type" drop-down menu.
  
-The following dialog box will appear:  http://imgur.com/WbxmJFI
+[The following dialog box will appear](http://imgur.com/WbxmJFI)
 
 Only click the "Color" box under 'Vert.'  All other checkboxes should
 be unclicked, _especially_ the 'Binary Encoding' checkbox --
@@ -71,6 +73,4 @@ unchecking this ensures that the PLY file will be in human-readable
 ASCII format.  At the bottom left of the checkbox, the radio button
 for 'All' should be selected.  
 Click 'Save', and you'll have a PLY file that Glasscutter can handle.
-
-
 

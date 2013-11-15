@@ -1,3 +1,19 @@
+/* 
+glassCutter v 1.5
+ 
+Note: this version of the software requires an ASCII vertex colored PLY file for import. 
+Future versions will be able to handle OBJ import.
+
+For initial attempts at color slicing, try 10-20 microslices and 1 layer overlap, to avoid computer freeze-ups.
+
+ created in the summer of 2013
+ by Alex Hornstein for Looking Glass Ltd., purveyors of volumetric prints, paintings, and pickles
+ www.lookingglassfactory.com
+ 
+This code is licensed under a Creative Commons Attribution-ShareAlike 3.0 license.
+ 
+ */
+
 import processing.pdf.*;
 import controlP5.*;
 import javax.swing.*; 
