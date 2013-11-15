@@ -1,8 +1,10 @@
 Glasscutter is a program that slices color 3D objects into a set of
 flat slices.
 
-**Brief Rundown Of The Program**
+**Here's a brief rundown of the program**
+
 [Here's the Glasscutter UI](http://imgur.com/3wQSfQg)
+
 There are three main sections of the UI:
 
 **The box dimensions**
@@ -42,11 +44,11 @@ the page.
 
 The bottom options are for the png export.  The resolution sets, well,
 the resolution of the png in dpi.  'Overlap' prints microslices from
-the neighboring slices onto the current slice.  The number is from
-0-1, where a 0 indicates no overlap, a 0.5 indicates a 50% overlap and
-a 1 indicates a 100% overlap.
+the neighboring slices onto the current slice.  The value is the
+number of microslices from the neighboring slice that will be printed
+on the next slice.
 
-Finally, in the center, there are two checkboxes to set pdf and png
+Finally, in the center, along the right side, there are two checkboxes to set pdf and png
 exports.  If no boxes are checked, the program will just slice the
 model and show a preview, but not export anything.  If either box is
 checked, the program will export that format.
@@ -125,3 +127,23 @@ ASCII format.  At the bottom left of the checkbox, the radio button
 for 'All' should be selected.  
 Click 'Save', and you'll have a PLY file that Glasscutter can handle.
 
+
+*********************************************************************
+
+Glasscutter is a work in progress.  We'd welcome contributions -- if
+you'd like to get involved in the code, send a pull request.  If you
+fork it and build something cool, tell us about it at
+alex@artiswrong.com
+
+In particular, we'd love help adjusting the GUI and adding support for
+texture mapping.  If you're interested in helping with either of
+these, get in touch.
+
+There's a few other features that we're adding.  Stay tuned for...
+
+Upcoming features:
+
+*support for rendering polygonal surfaces rather than stacking microslices together
+*OBJ import
+*support for texture mapping
+*integrated png tiling
