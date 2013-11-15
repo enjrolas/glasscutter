@@ -143,7 +143,11 @@ There's a few other features that we're adding.  Stay tuned for...
 
 Upcoming features:
 
-*support for rendering polygonal surfaces rather than stacking microslices together
-*OBJ import
-*support for texture mapping
-*integrated png tiling
+* support for rendering polygonal surfaces rather than stacking
+ microslices together
+
+* OBJ import
+
+* support for texture mapping
+
+* integrated png tiling
