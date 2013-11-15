@@ -20,7 +20,8 @@ directory that you downloaded into the libraries folder and restart
 processing.  You're good to go!
 
 **License**
-This work is licensed under a Creative Commons Attribution-ShareAlike
+
+This work is licensed under the Creative Commons Attribution-ShareAlike
 3.0 Unported License.
 The summary and full text of the license are viewable [here](http://creativecommons.org/licenses/by-sa/3.0/deed.en_US)
 
