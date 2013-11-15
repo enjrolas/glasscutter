@@ -1,15 +1,42 @@
+/* 
+glassCutter v 1.5
+ 
+Note: this version of the software requires an ASCII vertex colored PLY file for import. 
+Future versions will be able to handle OBJ import.
+
+For initial attempts at color slicing, try 10-20 microslices and 1 layer overlap, to avoid computer freeze-ups.
+
+ created in the summer of 2013
+ by Alex Hornstein for Looking Glass Ltd., purveyors of volumetric prints, paintings, and pickles
+ www.lookingglassfactory.com
+ 
+This code is licensed under a Creative Commons Attribution-ShareAlike 3.0 license.
+ 
+ */
+
 import processing.pdf.*;
 import controlP5.*;
 import javax.swing.*; 
 
+//GUI variables
 PFont font;
-
 ControlP5 cp5;
 CheckBox checkbox;
+
+//the Slicer object holds the settings for slicing a file, and 
+//also the collection of vertices, triangles and line segments that
+//make up the sliced file
 Slicer slicer;
+
+//a couple variables for the slicing part of the GUI.  I could probably
+//tuck these into a class somewhere, for tidiness' sake
 int slice, thickSlice;
 int microslices;
+
+
 String mode="settings";
+
+//flags to keep track of what we're exporting
 boolean exportPDF=false, exportPNG=false;
 
 int currentSlice=0;
@@ -19,14 +46,17 @@ boolean verbose=true;
 void setup()
 { 
   size(500, 500);
+  //sets the cute little favicon to the gif image in the sketch's data folder
   ImageIcon titlebaricon = new ImageIcon(loadBytes("glass cutter.gif"));
   frame.setIconImage(titlebaricon.getImage());  
+
+  //initialize the GUI
   setupGui();
 }
 
 void draw()
 {
-  //if we're done slicing
+  //if we're done slicing, draw the selected slice.  Arrow keys select the next or previous slice
   if (mode.equals("slices"))
   {
     font=loadFont("AmericanTypewriter-15.vlw");
@@ -74,6 +104,15 @@ void draw()
   }
 }
 
+//this function draws a progress bar and calculates the time remaining
+//for the task at hand.  Whenever it's called, it gets three parameters for the 
+//current progress through a task, the value the progress will hit at the end of the task,
+//and the time the task started.  Based on those values, it calculates the
+//remaining time until the task is complete.  This method is prone to error 
+//(it's very similar to the method that internet explorer used to use to
+//calculate the remaining time in a download, which SUCKED, but it's a decent start)
+
+
 void progressBar(int current, int max, int x, int y, int barWidth, int barHeight, int startTime)
 {
   stroke(0, 0, 255);
@@ -98,6 +137,11 @@ void progressBar(int current, int max, int x, int y, int barWidth, int barHeight
 }
 
 
+//if a the up or right key is pressed, increment the current slice.  
+//down or left key, decrement the slice.  There are a number of microslices
+//in each 'thickSlices', and the number of thickslices is based on the 
+//box dimensions divided by the slice thickness
+
 void keyPressed()
 {
   if (slicer!=null)
@@ -117,7 +161,7 @@ void keyPressed()
 }
 
 
-
+//This sets up the GUI elements
 void setupGui()
 {
   font=loadFont("AmericanTypewriter-15.vlw");
@@ -358,6 +402,7 @@ void setupGui()
           ;
 }
 
+//this function handles any events from the GUI
 public void controlEvent(ControlEvent theEvent) {
   String event=theEvent.getName();
   println(event);
@@ -390,6 +435,10 @@ public void controlEvent(ControlEvent theEvent) {
   }
 }
 
+//This function is called upon clicking 'slice model' in the GUI,
+//and it pulls the values from the GUI and uses them to initialize 
+//a slicer object.  It then calls slicer.process(), which loads the PLY file,
+//parses it, scales and translates it, and then slices the model.
 void sliceModel()
 {
   float x, y, z, thickness;
@@ -438,6 +487,7 @@ void sliceModel()
 }
 
 
+//off the shelf javax.swing fileChooser object, to select the ply file for slicing
 String fileChooser()
 {
   // set system look and feel 
@@ -469,8 +519,6 @@ String fileChooser()
   else
     return "";
 }
-
-
 
 
 class Slicer {
@@ -695,6 +743,7 @@ class Slicer {
     status="finished";
   }
 
+  //draws the crosshatches in the pdf layout
   void drawCrosshatches(PGraphics pdf, int x, int y, int w, int h, int length, int slice)
   {
     pdf.fill(0);
@@ -713,8 +762,10 @@ class Slicer {
     pdf.text(output, x+w-pdf.textWidth(output), y+10);
   }
 
-
-
+  
+  //loads and parses the ply file and builds up the vertices and 
+  //triangles ArrayLists that contain all the vertices and triangles 
+  //from the file 
   void loadPLY(String filename)
   {
     status="loading PLY file";
@@ -824,6 +875,8 @@ class Slicer {
     status="file loaded";
   }
 
+  //scales the model so that the largest box dimension:model dimension 
+  //fills up 95% of the box
   void scaleModel()
   {
     status="scaling model";
@@ -897,6 +950,8 @@ class Slicer {
     status="model scaled";
   }
 
+  //If we're slicing along the x axis, this function returns the 
+  //x value of the vector. Y axis, the function returns the y value, etc.
   float getAxis(PVector vector, char axis)
   {
     switch(axis)
@@ -912,6 +967,10 @@ class Slicer {
     }
   }
 
+  //this is the money function.  Goes through the model, microslice by microslice,
+  //and checks each triangle to see if it intersects the slicing plane.
+  //If so, it calculates the line segment at the intersection of the slicing
+  //plane and the triangle and adds that to an ArrayList of line segments for this slice.
   void sliceModel(float thickness, char axis)
   {
     status="slicing";
@@ -998,9 +1057,10 @@ class Slicer {
     return(new Line(a, b, axis, displayScalingFactor));
   }
 
+  //calculates the vertex at the intersection of a line between Vertex A and
+  //Vertex B and the plane normal to Axis at point Plane
   Vertex intersectLineWithPlane(Vertex a, Vertex b, float plane, char axis)
   {
-
     PVector P2subP1=PVector.sub(b.point, a.point);
     PVector normal;
     switch(axis) {
