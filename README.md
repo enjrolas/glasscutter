@@ -1,7 +1,8 @@
 Glasscutter is a program that slices color 3D objects into a set of
 flat slices.
 
-**Here's a brief rundown of the program**
+
+**A brief rundown of the program**
 
 [Here's the Glasscutter UI](http://imgur.com/3wQSfQg)
 
