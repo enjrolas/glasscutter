@@ -1,12 +1,14 @@
 Glasscutter is a program that slices color 3D objects into a set of
 flat slices.
 
-*Language*
+**Language**
+
 Glasscutter is written in Processing, which is based on Java.  The
 Processing environment is open-source and free for download from
 http://www.processing.org 
 
-*Dependencies:*
+**Dependencies:**
+
 Glasscutter requires the ControlP5 library for graphical user
 interfaces, available for download from
 http://www.sojamo.de/libraries/controlP5/
