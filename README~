@@ -4,8 +4,8 @@ flat slices.
 
 This version of Glasscutter can only slice ascii-formatted,
 vertex-colored PLY files.  Fortunately, the open-source software
-Meshlab can convert just about any 3D file format into
-ascii-formatted, vertex-colored PLYs.  Here's how:
+Meshlab(http://meshlab.sourceforge.net/) can convert just about any 3D
+file format into ascii-formatted, vertex-colored PLYs.  Here's how:
 
 First, the vertex coloring.  There are two ways to color 3D files:
 vertex coloring and texture-mapping.  In texture mapping, there is an
@@ -33,6 +33,20 @@ vertex-colored.  You'll still have to export the PLY file, though.
 Read below to see how.
 
 
+Exporting PLYs:
+Exporting PLYs is simple, but there are a few things that you have to
+get right.  To export a file as a PLY, first open the file in
+Meshlab.  Then, go to File->Export Mesh As... and select "Stanford
+Polygon File Format (*.ply)" in the "files of type" drop-down menu.
+ 
+The following dialog box will appear:  http://imgur.com/WbxmJFI
+
+Only click the "Color" box under 'Vert.'  All other checkboxes should
+be unclicked, _especially_ the 'Binary Encoding' checkbox --
+unchecking this ensures that the PLY file will be in human-readable
+ASCII format.  At the bottom left of the checkbox, the radio button
+for 'All' should be selected.  
+Click 'Save', and you'll have a PLY file that Glasscutter can handle.
 
 
 
