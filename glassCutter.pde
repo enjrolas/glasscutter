@@ -41,20 +41,6 @@ void draw()
         Line segment=((Line)((Slice)slicer.slices.get(slice)).segments.get(i));
         segment.drawSegment(0);
       }        
-      for (int i=0;i<((Slice)slicer.slices.get(slice)).surfaces.size();i++)
-      {
-        Triangle triangle=((Triangle)((Slice)slicer.slices.get(slice)).surfaces.get(i));        
-        triangle=slicer.getTriangle(triangle, slicer.axis);
-        beginShape();
-        for(int j=0;j<3;j++)
-        {
-          Vertex v=triangle.slicedVertices[j];
-          stroke(v.vertexColor);
-          fill(v.vertexColor);
-          vertex(slicer.displayScalingFactor*v.point.x,slicer.displayScalingFactor*v.point.y);
-        }
-        endShape();
-      }        
       slice++;
     }
     String sliceString="slice "+thickSlice+" / "+slicer.slices.size()/slicer.microslices;
@@ -70,7 +56,7 @@ void draw()
     font=loadFont("AmericanTypewriter-20.vlw");
     textFont(font);
     fill(255);
-    if (slicer.status!=null)
+    if(slicer.status!=null)
       text(slicer.status, 100, 100);
     if (slicer.status.equals("slicing"))
       progressBar(slicer.slices.size(), ceil(slicer.microslices*slicer.getAxis(slicer.bound, slicer.axis)/slicer.thickness), 100, 130, 200, 20, slicer.startTime);
@@ -118,6 +104,7 @@ void keyPressed()
   {
     if ((keyCode==UP)||(keyCode==RIGHT))
       thickSlice++;
+    ;  
     if ((keyCode==DOWN)||(keyCode==LEFT))
       thickSlice--;
     if (thickSlice<0)
@@ -144,9 +131,8 @@ void setupGui()
           .setFocus(true)
             .setColor(color(255, 0, 0))
               .setLabelVisible(false)
- //.setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/minecraft/002_lake_house.ply")
-                //.setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/minecraft/MinecraftPickaxe.ply")
-                .setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/mikan-sample/mikan rotated.ply")
+              .setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/minecraft/mineways_world_video1.ply")
+                //.setValue("/Users/apple/Dropbox/Manila Mantis/3D scans/mikan-sample/mikan rotated.ply")
                 //                .setValue("/Users/alex/Documents/LookingGlass/slices/jane with bird - aug 3 2013.ply")
                 //.setValue("/Users/alex/Documents/LookingGlass/slices/shawn thinking - aug 3 2013.ply")
                 //.setValue("C:\\Users\\asus-hadd\\Downloads\\mikan-rotated.ply");
@@ -343,7 +329,7 @@ void setupGui()
                 .setSpacingColumn(40)
                   .addItem("PDF", 0)
                     .addItem("PNG", 1)
-                      ;
+                        ;
 
   cp5.addTextfield("resolution")
     .setPosition(380, 340)
@@ -680,17 +666,12 @@ class Slicer {
     for (thickSlice=0;thickSlice<slices.size()/microslices;thickSlice++)
     {
       output.beginDraw();
-      output.background(255, 1.0);
+      output.background(255,1.0);
       output.strokeWeight(1.0);
       if (verbose)
-      {
         println("drawing slice " + thickSlice +" / "+ slices.size()/microslices);
-        println("\t"+((Slice)slices.get(slice)).segments.size()+" line segments");
-        println("\t"+((Slice)slices.get(slice)).surfaces.size()+" surfaces");
-      }
       for (slice=thickSlice*microslices;(slice<((thickSlice+1)*microslices)+(int)(overlap*microslices))&&(slice<slicer.slices.size());slice++)
       {
-        
         for (int i=0;i<((Slice)slices.get(slice)).segments.size();i++)
         {
           Line segment=((Line)((Slice)slices.get(slice)).segments.get(i));
@@ -701,23 +682,6 @@ class Slicer {
           output.vertex(segment.end.point.x*scalingFactor/displayScalingFactor, segment.end.point.y*scalingFactor/displayScalingFactor);          
           output.endShape();
         }
-        
-        //draw the triangles
-        for (int i=0;i<((Slice)slices.get(slice)).surfaces.size();i++)
-        {
-          Triangle triangle=((Triangle)((Slice)slices.get(slice)).surfaces.get(i));
-          triangle=getTriangle(triangle, axis);
-          output.beginShape();
-          for(int j=0;j<3;j++)
-          {
-          Vertex v=triangle.slicedVertices[j];
-          output.stroke(v.vertexColor);
-          output.fill(v.vertexColor);
-          output.vertex(scalingFactor*v.point.x,scalingFactor*v.point.y);
-          }
-          output.endShape();
-        }
-
       }
       output.endDraw();
       if (((Slice)slices.get(0)).segments.size()>0)
@@ -967,286 +931,241 @@ class Slicer {
           ((Slice)slices.get(slices.size()-1)).segments.add(a);
           intersections++;
         }
-        //if the triangle is parallel to the slicing plane and within the slice width, add it to the surfaces that we'll draw for this slice
-        else if (isParallel((Triangle)triangles.get(i), axis, plane, thickness))
-        {
-          ((Slice)slices.get(slices.size()-1)).surfaces.add((Triangle)triangles.get(i));
-          intersections+=3;
-        }
       }
-        if (verbose)
-          println("sliced plane "+plane+" / " + getAxis(bound, axis)+".  "+intersections+" intersections");
-      
+      if (verbose)
+        println("sliced plane "+plane+" / " + getAxis(bound, axis)+".  "+intersections+" intersections");
     }
-      status="sliced";
-    
+    status="sliced";
   }
 
-    boolean crossesPlane(Triangle triangle, char axis, float plane)
-    {
-      Vertex[] triangleVertices=new Vertex[3];
-      for (int i=0;i<3;i++)
-        triangleVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
-      return (!(( (triangleVertices[0].getAxis(axis) > plane) && (triangleVertices[1].getAxis(axis) > plane) && (triangleVertices[2].getAxis(axis) > plane)) || ((triangleVertices[0].getAxis(axis) < plane) && (triangleVertices[1].getAxis(axis) < plane) && (triangleVertices[2].getAxis(axis) < plane))));
-    }
+  boolean crossesPlane(Triangle triangle, char axis, float plane)
+  {
+    Vertex[] triangleVertices=new Vertex[3];
+    for (int i=0;i<3;i++)
+      triangleVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
+    return (!(( (triangleVertices[0].getAxis(axis) > plane) && (triangleVertices[1].getAxis(axis) > plane) && (triangleVertices[2].getAxis(axis) > plane)) || ((triangleVertices[0].getAxis(axis) < plane) && (triangleVertices[1].getAxis(axis) < plane) && (triangleVertices[2].getAxis(axis) < plane))));
+  }
 
-    //checks to see if the triangle lies entirely within one slice width
-    //below the slicing plane.  The fact that the triangle lies _below_
-    //the plane is arbitrary.  We'll see if that's any good
-    boolean isParallel(Triangle triangle, char axis, float plane, float thickness)
+  Line getSegment(Triangle triangle, char axis, float plane)
+  {
+    Vertex[] triangleVertices=new Vertex[3];
+    for (int i=0;i<3;i++)
+      triangleVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
+    Vertex a, b;
+    if (triangleVertices[0].getAxis(axis)>plane)
     {
-      Vertex[] triangleVertices=new Vertex[3];
-      for (int i=0;i<3;i++)
-        triangleVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
-      return ( (triangleVertices[0].getAxis(axis) > plane-thickness) && (triangleVertices[1].getAxis(axis) > plane-thickness) && (triangleVertices[2].getAxis(axis) > plane-thickness) && (triangleVertices[0].getAxis(axis) < plane) && (triangleVertices[1].getAxis(axis) < plane) && (triangleVertices[2].getAxis(axis) < plane));
-    }
-
-    Triangle getTriangle(Triangle triangle, char axis)
-    {
-      for(int i=0;i<3;i++)
-        triangle.slicedVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
-      switch(axis){
-        case('x'):
-          for(int i=0;i<3;i++)
-          {
-            triangle.slicedVertices[i].point.x=triangle.slicedVertices[i].point.y;
-            triangle.slicedVertices[i].point.y=triangle.slicedVertices[i].point.z;
-          }
-        break;
-        case('y'):
-          for(int i=0;i<3;i++)
-            triangle.slicedVertices[i].point.y=triangle.slicedVertices[i].point.z;
-        break;
-        case('z'):
-        break;
-      }
-      return triangle;      
-    }
-
-    Line getSegment(Triangle triangle, char axis, float plane)
-    {
-      Vertex[] triangleVertices=new Vertex[3];
-      for (int i=0;i<3;i++)
-        triangleVertices[i]=(Vertex)vertices.get(triangle.vertices[i]);
-      Vertex a, b;
-      if (triangleVertices[0].getAxis(axis)>plane)
+      if (triangleVertices[1].getAxis(axis)>plane)
       {
-        if (triangleVertices[1].getAxis(axis)>plane)
-        {
-          a=intersectLineWithPlane(triangleVertices[0], triangleVertices[2], plane, axis);
-          b=intersectLineWithPlane(triangleVertices[1], triangleVertices[2], plane, axis);
-        }
-        else
-        {
-          if (triangleVertices[2].getAxis(axis)>plane)
-          {
-            a=intersectLineWithPlane(triangleVertices[0], triangleVertices[1], plane, axis);
-            b=intersectLineWithPlane(triangleVertices[2], triangleVertices[1], plane, axis);
-          }
-          else
-          {
-            a=intersectLineWithPlane(triangleVertices[0], triangleVertices[1], plane, axis);
-            b=intersectLineWithPlane(triangleVertices[0], triangleVertices[2], plane, axis);
-          }
-        }
+        a=intersectLineWithPlane(triangleVertices[0], triangleVertices[2], plane, axis);
+        b=intersectLineWithPlane(triangleVertices[1], triangleVertices[2], plane, axis);
       }
       else
       {
-        if (triangleVertices[1].getAxis(axis)<plane)
+        if (triangleVertices[2].getAxis(axis)>plane)
         {
-          a=intersectLineWithPlane(triangleVertices[2], triangleVertices[0], plane, axis);
+          a=intersectLineWithPlane(triangleVertices[0], triangleVertices[1], plane, axis);
           b=intersectLineWithPlane(triangleVertices[2], triangleVertices[1], plane, axis);
         }
         else
         {
-          if (triangleVertices[2].getAxis(axis)<plane)
-          {
-            a=intersectLineWithPlane(triangleVertices[1], triangleVertices[0], plane, axis);
-            b=intersectLineWithPlane(triangleVertices[1], triangleVertices[2], plane, axis);
-          }
-          else
-          {
-            a=intersectLineWithPlane(triangleVertices[1], triangleVertices[0], plane, axis);
-            b=intersectLineWithPlane(triangleVertices[2], triangleVertices[0], plane, axis);
-          }
+          a=intersectLineWithPlane(triangleVertices[0], triangleVertices[1], plane, axis);
+          b=intersectLineWithPlane(triangleVertices[0], triangleVertices[2], plane, axis);
         }
       }
-      //  println(displayScalingFactor);
-      return(new Line(a, b, axis, displayScalingFactor));
     }
-
-    Vertex intersectLineWithPlane(Vertex a, Vertex b, float plane, char axis)
+    else
     {
-
-      PVector P2subP1=PVector.sub(b.point, a.point);
-      PVector normal;
-      switch(axis) {
-        case('x'):
-        normal=new PVector(1, 0, 0);
-        break;
-        case('y'):
-        normal=new PVector(0, 1, 0);
-        break;
-        case('z'):
-        normal=new PVector(0, 0, 1);
-        break;
-      default:
-        normal=new PVector(0, 0, 0);
-        break;
+      if (triangleVertices[1].getAxis(axis)<plane)
+      {
+        a=intersectLineWithPlane(triangleVertices[2], triangleVertices[0], plane, axis);
+        b=intersectLineWithPlane(triangleVertices[2], triangleVertices[1], plane, axis);
       }
-      PVector P3=PVector.mult(normal, plane);
-      PVector P3subP1=PVector.sub(P3, a.point);
-      float u = normal.dot(P3subP1) / normal.dot(P2subP1);
-      Vertex intersection = new Vertex(PVector.add(a.point, PVector.mult(P2subP1, u)));  
-      intersection.averageColors(a, b);
-      return intersection;
+      else
+      {
+        if (triangleVertices[2].getAxis(axis)<plane)
+        {
+          a=intersectLineWithPlane(triangleVertices[1], triangleVertices[0], plane, axis);
+          b=intersectLineWithPlane(triangleVertices[1], triangleVertices[2], plane, axis);
+        }
+        else
+        {
+          a=intersectLineWithPlane(triangleVertices[1], triangleVertices[0], plane, axis);
+          b=intersectLineWithPlane(triangleVertices[2], triangleVertices[0], plane, axis);
+        }
+      }
     }
+    //  println(displayScalingFactor);
+    return(new Line(a, b, axis, displayScalingFactor));
   }
 
-  //data structure for storing basic information about a PLY element
-  class Element {
-    public
-      String name;
-    int units;
-    ArrayList properties;
+  Vertex intersectLineWithPlane(Vertex a, Vertex b, float plane, char axis)
+  {
 
-    public Element(String _name, int _units)
-    {
-      name=_name;
-      units=_units;
-      properties=new ArrayList<Property>();
+    PVector P2subP1=PVector.sub(b.point, a.point);
+    PVector normal;
+    switch(axis) {
+      case('x'):
+      normal=new PVector(1, 0, 0);
+      break;
+      case('y'):
+      normal=new PVector(0, 1, 0);
+      break;
+      case('z'):
+      normal=new PVector(0, 0, 1);
+      break;
+    default:
+      normal=new PVector(0, 0, 0);
+      break;
     }
+    PVector P3=PVector.mult(normal, plane);
+    PVector P3subP1=PVector.sub(P3, a.point);
+    float u = normal.dot(P3subP1) / normal.dot(P2subP1);
+    Vertex intersection = new Vertex(PVector.add(a.point, PVector.mult(P2subP1, u)));  
+    intersection.averageColors(a, b);
+    return intersection;
   }
+}
 
-  class Property {
-    int index;
+//data structure for storing basic information about a PLY element
+class Element {
+  public
     String name;
-    public Property(int _index, String _name)
-    {
-      index=_index;
-      name=_name;
+  int units;
+  ArrayList properties;
+
+  public Element(String _name, int _units)
+  {
+    name=_name;
+    units=_units;
+    properties=new ArrayList<Property>();
+  }
+}
+
+class Property {
+  int index;
+  String name;
+  public Property(int _index, String _name)
+  {
+    index=_index;
+    name=_name;
+  }
+}
+
+class Line {
+  Vertex start, end;
+  public Line(Vertex _start, Vertex _end, char axis, float _scalingFactor)
+  {
+    switch(axis)
+    {      
+      case('x'):
+      start= new Vertex(_scalingFactor*_start.point.y, _scalingFactor*_start.point.z, 0, _start.vertexColor);
+      end= new Vertex(_scalingFactor*_end.point.y, _scalingFactor*_end.point.z, 0, _end.vertexColor);
+      break;
+      case('y'):
+      start=new Vertex(_scalingFactor*_start.point.x, _scalingFactor*_start.point.z, 0, _start.vertexColor);
+      end=new Vertex(_scalingFactor*_end.point.x, _scalingFactor*_end.point.z, 0, _end.vertexColor);
+      break;
+      case('z'):
+      start=new Vertex(_scalingFactor*_start.point.x, _scalingFactor*_start.point.y, 0, _start.vertexColor);
+      end=new Vertex(_scalingFactor*_end.point.x, _scalingFactor*_end.point.y, 0, _end.vertexColor);
+      break;
     }
   }
+  void drawSegment(int segmentColor)
+  {
+    beginShape();
+    if (segmentColor==255)
+      stroke(255);
+    else
+      stroke(start.vertexColor);
+    vertex(start.point.x, start.point.y);
+    if (segmentColor==255)
+      stroke(255);
+    else
+      stroke(end.vertexColor);
+    vertex(end.point.x, end.point.y);
+    endShape();
+  }
+  void printLine()
+  {
+    start.printVertex();
+    end.printVertex();
+  }
+}
 
-  class Line {
-    Vertex start, end;
-    public Line(Vertex _start, Vertex _end, char axis, float _scalingFactor)
-    {
-      switch(axis)
-      {      
-        case('x'):
-        start= new Vertex(_scalingFactor*_start.point.y, _scalingFactor*_start.point.z, 0, _start.vertexColor);
-        end= new Vertex(_scalingFactor*_end.point.y, _scalingFactor*_end.point.z, 0, _end.vertexColor);
-        break;
-        case('y'):
-        start=new Vertex(_scalingFactor*_start.point.x, _scalingFactor*_start.point.z, 0, _start.vertexColor);
-        end=new Vertex(_scalingFactor*_end.point.x, _scalingFactor*_end.point.z, 0, _end.vertexColor);
-        break;
-        case('z'):
-        start=new Vertex(_scalingFactor*_start.point.x, _scalingFactor*_start.point.y, 0, _start.vertexColor);
-        end=new Vertex(_scalingFactor*_end.point.x, _scalingFactor*_end.point.y, 0, _end.vertexColor);
-        break;
-      }
-    }
-    void drawSegment(int segmentColor)
-    {
-      beginShape();
-      if (segmentColor==255)
-        stroke(255);
-      else
-        stroke(start.vertexColor);
-      vertex(start.point.x, start.point.y);
-      if (segmentColor==255)
-        stroke(255);
-      else
-        stroke(end.vertexColor);
-      vertex(end.point.x, end.point.y);
-      endShape();
-    }
-    void printLine()
-    {
-      start.printVertex();
-      end.printVertex();
-    }
+class Slice {
+  ArrayList segments;
+  Slice()
+  {
+    segments=new ArrayList<Line>();
+  }
+}
+
+
+class Vertex {
+  color vertexColor;
+  PVector point;
+  public Vertex(float _x, float _y, float _z, color _color)
+  {
+    point=new PVector(_x, _y, _z);
+    vertexColor=_color;
+  }
+  public Vertex(float _x, float _y, float _z)
+  {
+    point=new PVector(_x, _y, _z);
+    vertexColor=color(0, 0, 0);
+  }
+  public Vertex(PVector _point)
+  {
+    point=_point;
+    vertexColor=color(0, 0, 0);
+  }
+  void averageColors(Vertex a, Vertex b)
+  {
+    float distance=a.point.dist(b.point);
+    float distanceToA=point.dist(a.point);
+    float ratio=distanceToA/distance;
+    vertexColor=lerpColor(a.vertexColor, b.vertexColor, ratio);
+  }
+  public Vertex(float _x, float _y, float _z, int _r, int _g, int _b)
+  {
+    point=new PVector(_x, _y, _z);
+    vertexColor=color(_r, _g, _b);
+  }
+  void scale(float scalingFactor)
+  {
+    point.mult(scalingFactor);
   }
 
-  class Slice {
-    ArrayList segments;
-    ArrayList surfaces;
-    Slice()
-    {
-      segments=new ArrayList<Line>();
-      surfaces=new ArrayList<Triangle>();
+  float getAxis(char axis)
+  {
+
+    switch(axis) {
+      case('x'):
+      return point.x;
+      case('y'):
+      return point.y;      
+      case('z'):
+      return point.z;
+    default:
+      return 0;
     }
   }
-
-
-  class Vertex {
-    color vertexColor;
-    PVector point;
-    public Vertex(float _x, float _y, float _z, color _color)
-    {
-      point=new PVector(_x, _y, _z);
-      vertexColor=_color;
-    }
-    public Vertex(float _x, float _y, float _z)
-    {
-      point=new PVector(_x, _y, _z);
-      vertexColor=color(0, 0, 0);
-    }
-    public Vertex(PVector _point)
-    {
-      point=_point;
-      vertexColor=color(0, 0, 0);
-    }
-    void averageColors(Vertex a, Vertex b)
-    {
-      float distance=a.point.dist(b.point);
-      float distanceToA=point.dist(a.point);
-      float ratio=distanceToA/distance;
-      vertexColor=lerpColor(a.vertexColor, b.vertexColor, ratio);
-    }
-    public Vertex(float _x, float _y, float _z, int _r, int _g, int _b)
-    {
-      point=new PVector(_x, _y, _z);
-      vertexColor=color(_r, _g, _b);
-    }
-    void scale(float scalingFactor)
-    {
-      point.mult(scalingFactor);
-    }
-
-    float getAxis(char axis)
-    {
-
-      switch(axis) {
-        case('x'):
-        return point.x;
-        case('y'):
-        return point.y;      
-        case('z'):
-        return point.z;
-      default:
-        return 0;
-      }
-    }
-    void printVertex() 
-    { 
-      println("( "+point.x+", "+point.y+", "+point.z+" )");
-    }
+  void printVertex() 
+  { 
+    println("( "+point.x+", "+point.y+", "+point.z+" )");
   }
+}
 
 
-  class Triangle {
-    int[] vertices;
-    Vertex[] slicedVertices;
-    public Triangle(int _a, int _b, int _c)
-    {
-      vertices=new int[3];
-      slicedVertices=new Vertex[3];
-      vertices[0]=_a;
-      vertices[1]=_b;
-      vertices[2]=_c;
-    }
+class Triangle {
+  int[] vertices;
+  public Triangle(int _a, int _b, int _c)
+  {
+    vertices=new int[3];
+    vertices[0]=_a;
+    vertices[1]=_b;
+    vertices[2]=_c;
   }
+}
 
