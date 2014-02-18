@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Glasscutter by enjrolas</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Glasscutter</h1>
+          <h2>color graphics slicer.  Slices 3D files into an array of images to be printed onto transparent acrylic, looking glass-style</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/enjrolas/glasscutter/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/enjrolas/glasscutter/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/enjrolas/glasscutter" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <p>Glasscutter is a program that slices color 3D objects into a set of
+flat slices.</p>
+
+<p><strong>A brief rundown of the program</strong></p>
+
+<p><a href="http://imgur.com/3wQSfQg">Here's the Glasscutter UI</a></p>
+
+<p>There are three main sections of the UI:</p>
+
+<p><strong>The box dimensions</strong></p>
+
+<p>When all the slices are stacked up, they will form a box of this
+dimension.</p>
+
+<p><strong>Slicing axis/slice thickness</strong></p>
+
+<p>The slices will be normal to the slicing axis.  The slices have a
+certain thickness -- this is the thickness of the material that the
+slices will be printed on.</p>
+
+<p>There is a number of microslices that make up each slice.  These
+microslices will all be printed together onto their slice.  Think of
+them like contour lines on a topological map.  The closer the contour
+lines get, the more detail they can represent on the map.</p>
+
+<p>The next version of Glasscutter, currently in beta, replaces
+microslices by drawing a polygon onto the slice if the triangle is
+flat enough that it lies within the thickness of a slice.</p>
+
+<p><strong>Output Options</strong></p>
+
+<p>Glasscutter currently supports two export formats:  png and pdf.  </p>
+
+<p>The options at the top are all for the pdf export -- output page
+dimensions, columns, rows and margin.  The pdf will contain a
+set of dimensionally accurate pages that can be directly printed and cut.
+An example pdf export is <a href="http://imgur.com/Lzw1tOf">here</a>, sliced from
+a colored version of <a href="http://www.thingiverse.com/thing:32477">this thingiverse thing</a></p>
+
+<p>Page dimensions set the size of the page, rows and margins set the
+number of slices that go on a page, spacing is the distance between
+the slices and margin is the margin between the slices and the edge of
+the page.</p>
+
+<p>The bottom options are for the png export.  The resolution sets, well,
+the resolution of the png in dpi.  'Overlap' prints microslices from
+the neighboring slices onto the current slice.  The value is the
+number of microslices from the neighboring slice that will be printed
+on the next slice.</p>
+
+<p>Finally, in the center, along the right side, there are two checkboxes to set pdf and png
+exports.  If no boxes are checked, the program will just slice the
+model and show a preview, but not export anything.  If either box is
+checked, the program will export that format.</p>
+
+<p><strong>Language</strong></p>
+
+<p>Glasscutter is written in Processing, which is based on Java.  The
+Processing environment is open-source and free for download from
+<a href="http://www.processing.org">http://www.processing.org</a> </p>
+
+<p><strong>Dependencies:</strong></p>
+
+<p>Glasscutter requires the ControlP5 library for graphical user
+interfaces, available for download <a href="http://www.sojamo.de/libraries/controlP5/">here.</a>
+To install, download the library from the above website and unzip it.
+There's a folder that contains your Processing sketches -- for mac
+users, the default location is in ~/Documents/Processing, and for
+windows users it's in My Documents/Processing.  Inside that folder,
+there's another folder called 'libraries'.  Drag the unzipped
+directory that you downloaded into the libraries folder and restart
+processing.  You're good to go!</p>
+
+<p><strong>License</strong></p>
+
+<p>This work is licensed under the Creative Commons Attribution-ShareAlike
+3.0 Unported License.
+The summary and full text of the license are viewable <a href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">here</a></p>
+
+<p>This version of Glasscutter can only slice ascii-formatted,
+vertex-colored PLY files.  Fortunately, the open-source software
+<a href="http://meshlab.sourceforge.net/">Meshlab</a> can convert just about any 3D
+file format into ascii-formatted, vertex-colored PLYs.  Here's how:</p>
+
+<p><strong>Vertex Coloring</strong></p>
+
+<p>There are two ways to color 3D files:
+vertex coloring and texture-mapping.  In texture mapping, there is an
+image file that contains the flattened "skin" of the 3D object.  Each
+vertex in the mesh contains a co-ordinate from the texture that
+describes how to wrap the skin around the mesh.  Glasscutter doesn't
+handle this, yet.  If you want to help make this happen, you would
+be a rock star hero.</p>
+
+<p>Vertex coloring is the other approach.  In this approach, each vertex
+in the mesh has a certain color.  When the renderer draws the
+triangles in the mesh, it'll color each triangle with a linear
+gradient between the vertex colors along the triangle's surface.  This
+is a much simpler way to color a mesh, but it has a limitation:  the
+resolution of a vertex-colored mesh is based on the number of vertices
+in the mesh.  You can add more vertices to increase the resolution,
+but it makes the 3D file larger and more difficult to handle.  Texture
+mapping scales much better.  </p>
+
+<p>You can use meshlab to convert a texture-mapped mesh to a
+vertex-colored mesh.  Open the 3D file in Meshlab, and then go to to
+Filters-&gt;Color Creation and Processing-&gt;Transfer Color: Texture to
+Vertex.  Give it a second, and your 3D object will now be
+vertex-colored.  You'll still have to export the PLY file, though.
+Read below to see how.</p>
+
+<p><strong>Exporting PLYs</strong></p>
+
+<p>Exporting PLYs is simple, but there are a few things that you have to
+get right.  To export a file as a PLY, first open the file in
+Meshlab.  Then, go to File-&gt;Export Mesh As... and select "Stanford
+Polygon File Format (*.ply)" in the "files of type" drop-down menu.</p>
+
+<p><a href="http://imgur.com/WbxmJFI">The following dialog box will appear</a></p>
+
+<p>Only click the "Color" box under 'Vert.'  All other checkboxes should
+be unclicked, <em>especially</em> the 'Binary Encoding' checkbox --
+unchecking this ensures that the PLY file will be in human-readable
+ASCII format.  At the bottom left of the checkbox, the radio button
+for 'All' should be selected.<br>
+Click 'Save', and you'll have a PLY file that Glasscutter can handle.</p>
+
+<hr><p>Glasscutter is a work in progress.  We'd welcome contributions -- if
+you'd like to get involved in the code, send a pull request.  If you
+fork it and build something cool, tell us about it at
+<a href="mailto:alex@artiswrong.com">alex@artiswrong.com</a></p>
+
+<p>In particular, we'd love help adjusting the GUI and adding support for
+texture mapping.  If you're interested in helping with either of
+these, get in touch.</p>
+
+<p>There's a few other features that we're adding.  Stay tuned for...</p>
+
+<p>Upcoming features:</p>
+
+<ul>
+<li><p>support for rendering polygonal surfaces rather than stacking
+microslices together</p></li>
+<li><p>OBJ import</p></li>
+<li><p>support for texture mapping</p></li>
+<li><p>integrated png tiling</p></li>
+</ul>
+        </section>
+
+        <footer>
+          Glasscutter is maintained by <a href="https://github.com/enjrolas">enjrolas</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
